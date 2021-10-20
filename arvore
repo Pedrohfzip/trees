@@ -1,0 +1,91 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby, 
+C#, VB, Perl, Swift, Prolog, Javascript, Pascal, HTML, CSS, JS
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct sNodo{
+    struct sNodo *direita;
+    struct sNodo *esquerda;
+    int dado;
+}Nodo;
+typedef struct sRaiz{
+    struct sNodo *direita;
+    struct sNodo *esquerda;
+    struct sNodo dado;
+}Raiz;
+
+
+
+int main()
+{
+    printf("Hello World");
+
+    return 0;
+}
+
+
+Nodo* criaNodo(int dado){
+    Nodo* nodo = (Nodo*) malloc(sizeof(Nodo*));
+    nodo->direita = NULL;
+    nodo->esquerda = NULL;
+    nodo->dado = dado;
+    return nodo;
+}
+
+Raiz* criarRaiz(Raiz* raiz,int dado){
+    Raiz* raiz = (Raiz*) malloc(sizeof(Raiz*));
+    raiz->direita = NULL;
+    raiz->esquerda = NULL;
+    raiz->dado = dado;
+    return raiz
+}
+
+
+void insereArvore(Raiz* raiz,int dado){
+    Nodo* nodo = criaNodo(dado)
+
+
+    if(raiz->esquerda == NULL && raiz->direita == NULL){
+        if(raiz->dado < dado){
+            raiz->esquerda = nodo
+        }else if(raiz->dado > dado){
+            raiz->direita = nodo
+        }else{
+            return NULL;
+        }
+    }else if(nodo->dado > dado){
+        if(raiz->direita != NULL){
+            insereArvore(raiz->direita,dado)
+        }else{
+            return NULL
+        }
+    }else if(nodo->dado < dado){
+        if(raiz->esquerda != NULL){
+            insereArvore(raiz->esquerda,dado)
+        }else{
+            return NULL
+        }
+    }
+
+
+}
+
+
+
+void mostrarArvore(Arvore* arvore){
+    Arvore* raizAux = arvore->raiz;
+
+    while(aux != NULL){
+        printf("%i,", aux->dado);
+        aux = aux->proximo;
+    }
+}
+
+
+
