@@ -1,0 +1,259 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node{
+    int  dado;
+    int altura;
+    struct Node *esquerda;
+    struct Node *direita;
+}Node;
+
+Node* criaNode(int);
+Node* inserir(Node*,int);
+Node* delete(Node*,int);
+int maior(int ,int );
+int altura(Node*);
+int fatorBalanceamento(Node*);
+void preOrder(Node*);
+void emOrdem(Node*);
+void posOrdem(Node*);
+Node* valorMin(Node*);
+Node* rightRotate(Node*);
+Node* leftRotate(Node*);
+
+
+
+
+
+int main() {
+    struct Node *root = NULL;
+
+    root = inserir(root, 20);
+    root = inserir(root, 19);
+    root = inserir(root, 18);
+    
+    
+    
+    
+    
+    preOrder(root);
+    printf("\n");
+    emOrdem(root);
+    printf("\n");
+    posOrdem(root);
+  return 0;
+}
+
+////////////////////////////////////////////////////
+
+Node *criaNode(int dado) {
+  Node *node = (struct Node *)
+    malloc(sizeof(struct Node));
+  node->dado = dado;
+  node->esquerda = NULL;
+  node->direita = NULL;
+  node->altura = 1;
+  return node;
+}
+
+////////////////////////////////////////////////////
+
+Node* inserir(Node* node, int dado) {
+  if (node == NULL)
+    return (criaNode(dado));
+
+  if (dado < node->dado)
+    node->esquerda = inserir(node->esquerda, dado);
+  else if (dado > node->dado)
+    node->direita = inserir(node->direita, dado);
+  else
+    return node;
+
+  node->altura = 1 + maior(altura(node->esquerda), altura(node->direita));
+
+  int balance = fatorBalanceamento(node);
+  if (balance > 1 && dado < node->esquerda->dado)
+    return rightRotate(node);
+
+  if (balance < -1 && dado > node->direita->dado)
+    return leftRotate(node);
+
+  if (balance > 1 && dado > node->esquerda->dado) {
+    node->esquerda = leftRotate(node->esquerda);
+    return rightRotate(node);
+  }
+
+  if (balance < -1 && dado < node->direita->dado) {
+    node->direita = rightRotate(node->direita);
+    return leftRotate(node);
+  }
+
+  return node;
+}
+
+////////////////////////////////////////////////////
+
+Node* delete(Node *root, int dado) {
+  if (root == NULL)
+    return root;
+
+  if (dado < root->dado)
+    root->esquerda = delete(root->esquerda, dado);
+
+  else if (dado > root->dado)
+    root->direita = delete(root->direita, dado);
+
+  else {
+    if ((root->esquerda == NULL) || (root->direita == NULL)) {
+      Node* temp = root->esquerda ? root->esquerda : root->direita;
+
+      if (temp == NULL) {
+        temp = root;
+        root = NULL;
+      } else
+        *root = *temp;
+      free(temp);
+    } else {
+      struct Node *temp = valorMin(root->direita);
+
+      root->dado = temp->dado;
+
+      root->direita = delete(root->direita, temp->dado);
+    }
+  }
+
+  if (root == NULL)
+    return root;
+  root->altura = 1 + maior(altura(root->esquerda),
+               altura(root->direita));
+
+  int balance = fatorBalanceamento(root);
+  if (balance > 1 && fatorBalanceamento(root->esquerda) >= 0)
+    return rightRotate(root);
+
+  if (balance > 1 && fatorBalanceamento(root->esquerda) < 0) {
+    root->esquerda = leftRotate(root->esquerda);
+    return rightRotate(root);
+  }
+
+  if (balance < -1 && fatorBalanceamento(root->direita) <= 0)
+    return leftRotate(root);
+
+  if (balance < -1 && fatorBalanceamento(root->direita) > 0) {
+    root->direita = rightRotate(root->direita);
+    return leftRotate(root);
+  }
+
+  return root;
+}
+
+////////////////////////////////////////////////////
+
+int altura(Node *N) {
+  if (N == NULL)
+    return 0;
+  return N->altura;
+}
+
+////////////////////////////////////////////////////
+
+int maior(int a, int b) {
+  return (a > b) ? a : b;
+}
+
+
+////////////////////////////////////////////////////
+
+int fatorBalanceamento(Node* N) {
+    int x;
+    if (N == NULL){
+        return 0;
+    }else{
+        x = altura(N->esquerda) - altura(N->direita);
+    } 
+        
+        
+  return x; 
+}
+
+////////////////////////////////////////////////////
+
+void preOrder(Node* root) {
+  if (root != NULL) {
+    printf("[%i] /=/ altura = %i /=/ fator = %i\n ", root->dado,root->altura,fatorBalanceamento(root));
+    preOrder(root->esquerda);
+    preOrder(root->direita);
+  }
+  
+}
+
+void emOrdem(Node* root){
+  if (root != NULL) {
+    emOrdem(root->esquerda);
+    printf("[%i] ", root->dado);
+    emOrdem(root->direita);
+  }
+}
+
+void posOrdem(Node* root){
+  if (root != NULL) {
+    posOrdem(root->esquerda);
+    posOrdem(root->direita);
+    printf("[%i] ", root->dado);
+  }
+}
+
+////////////////////////////////////////////////////
+
+
+Node* rightRotate(Node *y) {
+  struct Node *x = y->esquerda;
+  struct Node *T2 = x->direita;
+
+  x->direita = y;
+  y->esquerda = T2;
+
+  y->altura = maior(altura(y->esquerda), altura(y->direita)) + 1;
+  x->altura = maior(altura(x->esquerda), altura(x->direita)) + 1;
+
+  return x;
+}
+
+////////////////////////////////////////////////////
+
+Node* leftRotate(Node *x) {
+  struct Node *y = x->direita;
+  struct Node *T2 = y->esquerda;
+
+  y->esquerda = x;
+  x->direita = T2;
+
+  x->altura = maior(altura(x->esquerda), altura(x->direita)) + 1;
+  y->altura = maior(altura(y->esquerda), altura(y->direita)) + 1;
+
+  return y;
+}
+
+
+////////////////////////////////////////////////////
+
+Node* valorMin(Node *node) {
+  struct Node *current = node;
+
+  while (current->esquerda != NULL)
+    current = current->esquerda;
+
+  return current;
+}
+
+
+
+
+
+
+
+
+
+
+
+
